@@ -50,3 +50,20 @@ body {
   transform: scale(min(1, 100cqi / 1440));
   background: var(--color-brand);
 }
+
+.partner-bar {
+  container-type: inline-size;
+  display: flex;
+  height: 202px;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--color-cloud);
+  padding-bottom: 80px;
+}
+
+.partner-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(16px, calc((100cqi - 844px) / 4), 72px);
+}
