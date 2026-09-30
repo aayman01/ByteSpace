@@ -1,0 +1,43 @@
+---
+description: Reusable component, props, and accessibility standards
+alwaysApply: true
+---
+
+# Reusable components
+
+- One component per file. The file name matches the named export: `Button.tsx` exports `Button`.
+- Named exports for components. Default exports only for `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, and `not-found.tsx`.
+- Declare an explicit props type beside the component. DOM wrappers extend `ComponentProps` and accept `className`.
+- `components/ui` has no fetching, feature copy, or business rules. Variants and sizes are props, not copied class strings.
+- Extract a custom hook when logic is reused, or when a component mixes rendering with non-trivial state.
+- If the same structure appears twice, extract a component before a third copy.
+- Accessible by default: semantic elements, associated labels, keyboard support, and a visible focus style.
+
+```tsx
+// ❌ BAD — the same button markup copied at every call site
+<button className="h-10 rounded-full bg-foreground px-4 text-background">
+  Save
+</button>
+
+// ✅ GOOD — one primitive; the variant is a prop
+import type { ComponentProps } from "react";
+
+const variants = {
+  primary: "h-10 rounded-full bg-foreground px-4 text-background",
+  ghost: "h-10 rounded-full px-4",
+} as const;
+
+type ButtonProps = ComponentProps<"button"> & {
+  variant?: keyof typeof variants;
+};
+
+export function Button({
+  variant = "primary",
+  className,
+  ...props
+}: ButtonProps) {
+  return (
+    <button className={`${variants[variant]} ${className ?? ""}`} {...props} />
+  );
+}
+```

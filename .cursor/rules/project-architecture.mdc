@@ -1,0 +1,47 @@
+---
+description: Product folder layout and dependency rules for this Next.js app
+alwaysApply: true
+---
+
+# Project architecture
+
+Stack: Next.js App Router, React 19, TypeScript, Tailwind 4. Import with `@/`.
+
+Read `node_modules/next/dist/docs/` before using a Next.js API. This version differs from older App Router docs.
+
+## Where code lives
+
+- `app/` — routes only: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, and route handlers. A page composes features. It does not own UI markup or data logic.
+- `components/ui/` — presentational primitives with no domain knowledge (`Button`, `Input`, `Dialog`).
+- `components/layout/` — shell pieces shared across routes (`Header`, `Footer`, `Container`).
+- `features/<name>/` — one product area per folder: `components/`, `hooks/`, `actions.ts`, `types.ts`.
+- `lib/` — pure helpers, formatters, and clients. No React.
+- `hooks/` and `types/` — only code used by more than one feature.
+
+## Dependencies
+
+- A feature may import `components/ui`, `components/layout`, and `lib`.
+- Features do not import each other. Share through `lib` or `components`.
+- Colocate code in the feature that owns it. Move it to `components/`, `hooks/`, or `lib/` only when a second consumer exists.
+- Create a folder when the first real file needs it.
+
+## Server and client
+
+- Server Components are the default.
+- Add `"use client"` only on the smallest leaf that needs state, effects, or browser APIs.
+- Fetching and mutations live in the feature (`actions.ts` or a server module), not in UI components.
+
+```tsx
+// ❌ BAD — page owns markup and data
+export default async function Page() {
+  const items = await db.list();
+  return <ul>{items.map((item) => <li key={item.id}>{item.name}</li>)}</ul>;
+}
+
+// ✅ GOOD — page composes the feature
+import { ItemList } from "@/features/items/components/ItemList";
+
+export default function Page() {
+  return <ItemList />;
+}
+```
